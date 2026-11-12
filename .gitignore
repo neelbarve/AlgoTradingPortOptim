@@ -1,0 +1,15 @@
+# Course documents — kept local, not published
+ATPM Fall2026 Projects List.pdf
+Project_Instructions.docx
+Simulated FX Strategy Portfolio Implementation Plan.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Secrets and local settings
+.env
+.claude/settings.local.json
