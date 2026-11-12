@@ -3,6 +3,9 @@ ATPM Fall2026 Projects List.pdf
 Project_Instructions.docx
 Simulated FX Strategy Portfolio Implementation Plan.pdf
 
+# Course dataset — kept local, not published
+currencydata_raw/
+
 # Python
 __pycache__/
 *.pyc
