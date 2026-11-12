@@ -256,8 +256,7 @@ with st.sidebar:
                     for c, v in PLACEHOLDER_RATES.items()}
 
     # ---- About: what kind of strategy this is, and who is behind it.
-    with about_box:
-        st.header("About")
+    with about_box, st.expander("About"):
         st.write(
             "A multi-strategy currency portfolio. Trend-following and carry-trade signals run on the "
             "major FX pairs at the 1-hour timeframe. Every open trade is treated as a portfolio asset, "
@@ -280,7 +279,6 @@ with st.sidebar:
             if person["about"]:
                 st.caption(person["about"])
         st.caption(AFFILIATION)
-        st.divider()
 
 if not sel_strategies or not sel_pairs:
     st.info("Select at least one strategy and one pair in the sidebar.")
