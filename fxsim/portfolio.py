@@ -2,8 +2,14 @@
 
 A signal's life (entry, exit, trailing stop, target) comes from the strategy's
 own backtest. The portfolio decides only how much of each open signal to hold.
-It re-optimizes at every entry and exit; rebalance trades fill at that bar's
-open (the bar after the signal, or after a mid-bar stop or target).
+
+Exits are immediate: a strategy exit closes the position at the next bar's
+open and a stop or target closes it inside the bar. Everything else waits for
+the rebalance check, which runs on a fixed clock schedule (every 4 hours by
+default). A check re-optimizes over the open signals when a signal opened or
+closed since the last check, or when leverage has drifted above the cap. New
+signals are therefore entered at the first check after they appear, if they
+are still open. Rebalance trades fill at that bar's open.
 
 The account holds one net position per pair. When several strategies trade the
 same pair, only the net change is sent to market, so moving weight between
@@ -15,11 +21,30 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from .config import PAIRS
+from .config import PAIRS, REBALANCE_HOURS
 from .data import Market
 from .measures import drawdown_series
 from .optimizer import frontier, optimize_weights
 from .strategies import carry_diff
+
+
+def clock_schedule(index: pd.DatetimeIndex, i0: int, i1: int, hours: float) -> np.ndarray:
+    """Rebalance checks every `hours` of clock time, counted from midnight UTC of the first day.
+
+    A check fires on the first bar at or after each scheduled time, so one that lands while the
+    market is shut fires at the next open. With hourly bars, any interval of an hour or less
+    checks on every bar.
+    """
+    flags = np.zeros(len(index), dtype=bool)
+    if i1 <= i0:
+        return flags
+    start = index[i0].normalize()
+    elapsed = ((index[i0:i1] - start) / pd.Timedelta(hours=1)).to_numpy()
+    slot = np.floor(elapsed / float(hours))
+    new = np.ones(i1 - i0, dtype=bool)
+    new[1:] = slot[1:] != slot[:-1]
+    flags[i0:i1] = new
+    return flags
 
 
 @dataclass
@@ -51,8 +76,15 @@ def simulate(
     min_trade_frac: float,
     cash_rate: float,
     rates: dict[str, float],
+    rebalance_hours: float = REBALANCE_HOURS,
+    optimizer=optimize_weights,
+    schedule=None,
 ) -> dict:
+    """optimizer and schedule are replaceable stages: optimizer(mu, sigma, w_cur, E, **settings) returns
+    (weights, info) like optimizer.optimize_weights; schedule(index, i0, i1, hours) returns a boolean
+    array marking the bars where a rebalance check happens (default: clock_schedule)."""
     A = len(assets)
+    is_check = (schedule or clock_schedule)(market.index, i0, i1, rebalance_hours)
     comm = commission_pct / 100.0
     dt = market.dt_years
     index = market.index
@@ -161,8 +193,8 @@ def simulate(
         held = np.nonzero(units)[0]
 
         # Carry and cash interest for the time since the previous bar.
+        gross = 0.0
         if i > i0:
-            gross = 0.0
             for a in held:
                 notional = units[a] * mark[a] * arr[a].q_usd[i - 1]
                 gross += notional
@@ -174,8 +206,17 @@ def simulate(
         exiting = exits_open.get(i, ())
         entering = entries.get(i, ())
 
-        # ---- Open of the bar: signal exits, new signals and the rebalance.
-        if triggers or exiting or entering:
+        # A rebalance check happens only on the schedule, and only acts when the
+        # open signals changed since the last check or leverage drifted past the cap.
+        # Drift smaller than the smallest trade worth making is left alone.
+        drifted = (bool(is_check[i]) and equity > 0
+                   and gross / equity > leverage_cap + max(min_trade_frac, 1e-4))
+        if drifted:
+            triggers.append("leverage above cap")
+        do_rebalance = bool(is_check[i]) and bool(triggers or exiting or entering)
+
+        # ---- Open of the bar: signal exits (always immediate), new signals, and the rebalance if due.
+        if exiting or entering or do_rebalance:
             for a in held:
                 op = arr[a].open[i]
                 credit(a, price=units[a] * dirn[a] * (op - mark[a]) * arr[a].q_usd[i])
@@ -194,7 +235,7 @@ def simulate(
                 triggers.append(f"entry {assets[a].key}")
 
             eq_now = equity + b_price.sum() + b_carry.sum() + interest
-            ids = np.nonzero(active)[0]
+            ids = np.nonzero(active)[0] if do_rebalance else np.array([], dtype=int)
             row = {"time": index[i], "trigger": "; ".join(triggers), "open_signals": len(ids),
                    "old_weights": "", "new_weights": "", "reward": 0.0, "risk": 0.0,
                    "unreachable": False, "note": ""}
@@ -211,7 +252,7 @@ def simulate(
                             allowed[j] = dirn[ids[j]] == keep
                 E = exposure_matrix(ids)
                 cost_rate = comm + slip_vol_mult * np.array([arr[a].vol[i] for a in ids])
-                w_new, info = optimize_weights(
+                w_new, info = optimizer(
                     mu[ids], sigma[ids], w_cur, E,
                     cap=leverage_cap, expo_cap=expo_cap, objective=objective,
                     risk_cap=risk_cap, reward_floor=reward_floor, slip=cost_rate, allowed=allowed,
@@ -238,10 +279,11 @@ def simulate(
                     last_solved = {"time": index[i], "mu": mu[ids].copy(), "sigma": sigma[ids].copy(),
                                    "E": E, "allowed": allowed, "labels": labels, "weights": w_new.copy(),
                                    "reward": info["reward"], "risk": info["risk"]}
-            rebalances.append(row)
-
             # One net order per pair; its cost is shared among the assets that changed.
             change = units * dirn * px - before
+            # A check prompted only by drift that ends up trading nothing is not logged.
+            if do_rebalance and (triggers != ["leverage above cap"] or np.abs(change).max() > 1e-6):
+                rebalances.append(row)
             share = np.zeros(A)
             for k, mem in enumerate(members):
                 net = change[mem].sum()
@@ -268,7 +310,11 @@ def simulate(
                     if open_rt[a] is not None:
                         open_rt[a]["peak_notional"] = max(open_rt[a]["peak_notional"], size_after)
 
-        # ---- Inside the bar: trailing stops and targets. The rest rebalances at the next open.
+        # Between checks, entries and exits wait in the queue for the next one.
+        if not do_rebalance:
+            pending = triggers
+
+        # ---- Inside the bar: trailing stops and targets close at once; the rest waits for the next check.
         for a, px_exit, reason in exits_intra.get(i, ()):
             qv = arr[a].q_usd[i]
             if units[a] > 0:

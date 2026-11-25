@@ -35,6 +35,7 @@ COMMISSION_PCT = 0.01    # transaction cost per fill, percent of traded notional
 TRAIL_STOP_PCT = 2.5     # trailing stop-loss, percent from the best price since entry
 SLIP_VOL_MULT = 0.05     # slippage per fill = this x the pair's hourly volatility
 VOL_WINDOW = 24          # bars of hourly returns behind the volatility estimate
+REBALANCE_HOURS = 4      # the portfolio checks whether to rebalance every this many hours
 
 # PLACEHOLDER interest rates, percent a year, one constant per currency.
 # They approximate mid-2025 policy rates and are NOT from the dataset: the

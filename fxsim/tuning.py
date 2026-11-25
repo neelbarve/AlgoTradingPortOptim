@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 
 from .data import Market
-from .engine import run_backtest
+from .runner import backtest_returns
 from .measures import compute_measures, utility
-from .strategies import STRATEGIES, carry_diff, make_signal
+from .strategies import STRATEGIES
 
 
 def returns_matrix(
@@ -30,12 +30,7 @@ def returns_matrix(
     for params in strat.grid:
         pooled = np.zeros(i1 - i0)
         for pair in pairs:
-            sig = make_signal(strategy_key, frames[pair], pair, params, rates)
-            res = run_backtest(
-                market, pair, sig, i0, i1,
-                carry_diff_pct=carry_diff(pair, rates), **engine_kwargs,
-            )
-            pooled += res.hourly["ret"].to_numpy()
+            pooled += backtest_returns(market, frames, strategy_key, pair, params, rates, i0, i1, **engine_kwargs)
         out[strat.label(params)] = pooled / len(pairs)
     return pd.DataFrame(out, index=market.index[i0:i1])
 
@@ -138,3 +133,28 @@ def suggest_from_kfold(param_table: pd.DataFrame, measure: str) -> str:
     """Parameter set with the best mean test-fold score."""
     u = param_table["Mean test-fold score"].map(lambda v: utility(v, measure))
     return str(param_table.loc[u.idxmax(), "Parameters"])
+
+
+def tune(
+    market: Market,
+    frames: dict[str, pd.DataFrame],
+    key: str,
+    pairs: list[str],
+    rates: dict[str, float],
+    i0: int,
+    i1: int,
+    *,
+    measure: str,
+    train_months: int,
+    test_months: int,
+    k: int,
+    embargo: int,
+    cash_rate: float,
+    **engine_kwargs,
+) -> dict:
+    """Grid search scored by walk-forward and K-fold. The suggested set has the best mean test-fold score."""
+    R = returns_matrix(market, frames, key, list(pairs), dict(rates), i0, i1, **engine_kwargs)
+    wf, oos = walk_forward(R, measure, train_months, test_months, cash_rate)
+    folds, params = kfold(R, measure, k, embargo, cash_rate)
+    return {"labels": list(R.columns), "wf": wf, "oos": oos, "folds": folds, "params": params,
+            "suggested": suggest_from_kfold(params, measure)}
