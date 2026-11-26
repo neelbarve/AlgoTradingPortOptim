@@ -85,7 +85,7 @@ result = run_pipeline(market, frames, cfg)
 | `app.py` | Streamlit page: one tab per pipeline stage |
 | `fxsim/data.py` | Loads the candle files and aligns the pairs on one time grid |
 | `fxsim/pipeline.py` | The stages and their replaceable pieces; `run_pipeline` chains them |
-| `fxsim/strategies/` | Strategy blocks (SMA crossover, trend-filtered carry, Nelstein1), registered automatically |
+| `fxsim/strategies/` | Strategy blocks (SMA crossover, MACD crossover, trend-filtered carry, Nelstein1), registered automatically |
 | `fxsim/runner.py` | Backtests any registered block by key |
 | `fxsim/seasonality.py` | Seasonal models per pair (hour, day, weekly cycles; SARIMA), chosen by AIC/BIC |
 | `fxsim/study.py` | Nelstein1 robustness study: holdout, bias checks, benchmarks, overfitting |
@@ -95,6 +95,7 @@ result = run_pipeline(market, frames, cfg)
 | `fxsim/estimation.py` | Per-trade expected return and risk for each asset |
 | `fxsim/optimizer.py` | Portfolio weights over open signals; efficient frontier |
 | `fxsim/portfolio.py` | Margin-account simulation: scheduled rebalance checks, immediate exits, one net position per pair, trade and fill logs |
+| `What_Moves_FX.html` | Research report: which news moves FX, when, in which direction, with checks on our hourly data. Download it and open it in a browser |
 
 The page's Methodology tab has a block diagram and every rule.
 

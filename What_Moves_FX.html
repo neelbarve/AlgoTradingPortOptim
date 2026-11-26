@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>What Moves FX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~860px) with full-width tables and charts; evidence tags in mono. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #12161c; --fg2: #4a5361; --muted: #7d8592;
+  --rule: #e2e5ea; --accent: #1f5f8b; --accent-soft: #e6eef5;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --up: #2a78d6; --down: #e34948; --mid: #c3c2b7;
+  --good: #0c7a0c; --warn: #9a6400; --bad: #b42b2b;
+  --f-display: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", Consolas, ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111418; --surface: #181c22; --fg: #eef0f3; --fg2: #b8bfca; --muted: #8a919c;
+  --rule: #2a3039; --accent: #7db4e0; --accent-soft: #1b2733;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --up: #3987e5; --down: #e66767; --mid: #383835; --good: #3fbf5a; --warn: #e0a83a; --bad: #ef7a7a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #181c22; --fg: #eef0f3; --fg2: #b8bfca; --muted: #8a919c;
+  --rule: #2a3039; --accent: #7db4e0; --accent-soft: #1b2733;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --up: #3987e5; --down: #e66767; --mid: #383835; --good: #3fbf5a; --warn: #e0a83a; --bad: #ef7a7a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header .eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 clamp(30px, 5vw, 42px)/1.1 var(--f-display); margin: 10px 0 8px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { color: var(--fg2); max-width: 66ch; margin: 0; }
+h2 { font: 650 22px/1.25 var(--f-display); margin: 44px 0 6px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-display); margin: 22px 0 6px; }
+p { max-width: 70ch; margin: 8px 0; }
+.sub { color: var(--fg2); max-width: 70ch; margin: 0 0 12px; }
+.small { font-size: 13px; color: var(--muted); }
+.mono, td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.bottom { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; margin-top: 22px; }
+.bottom h2 { margin-top: 0; font-size: 18px; }
+.bottom ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+.callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; max-width: 78ch; }
+.tablebox { overflow-x: auto; margin: 10px 0 4px; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+th { font: 600 12px/1.3 var(--f-body); color: var(--fg2); background: var(--bg); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.tag { display: inline-block; font: 500 11px/1.4 var(--f-mono); color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 1px 6px; margin: 1px 2px 1px 0; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/1.4 var(--f-body); white-space: nowrap; }
+.pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.up { color: var(--up); } .down { color: var(--down); } .cond { color: var(--warn); } .contra { color: var(--s5); }
+.chart { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 14px 8px; margin: 12px 0; position: relative; }
+.chart h3 { margin: 0 0 2px; }
+.chart .note { font-size: 12.5px; color: var(--muted); margin: 0 0 6px; max-width: none; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart svg text { font-family: var(--f-body); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--fg2); margin: 2px 0 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.grid2 > * { min-width: 0; }
+#tip { position: fixed; pointer-events: none; background: var(--surface); color: var(--fg); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 20px rgba(0,0,0,.12); max-width: 260px; z-index: 20; }
+#tip b { font-weight: 600; } #tip .mono { font-size: 12px; }
+ol.refs { padding-left: 20px; font-size: 13.5px; display: grid; gap: 6px; }
+ol.refs a { color: var(--accent); word-break: break-word; }
+a { color: var(--accent); }
+.sev { font: 600 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; }
+.sev.high { color: var(--bad); } .sev.med { color: var(--warn); } .sev.low { color: var(--muted); }
+.print-only { display: none; }
+@media print { .print-only { display: inline; } div.print-only { display: block; } .screen-only { display: none; } .keep { break-inside: avoid; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">FX Strategy Portfolio · research note · 25 Nov 2026</div>
+  <h1>What Moves FX</h1>
+  <p class="lede">What the research says about news, macro releases and related markets, checked against our own hourly data for EUR/USD, GBP/USD, AUD/USD, USD/CAD and USD/JPY (July 2020 to June 2025).</p>
+</header>
+
+<section class="bottom" aria-label="Bottom line">
+  <h2>Bottom line</h2>
+  <ul>
+    <li><b>News drives how much FX moves, not where it goes next.</b> Only the surprise against consensus moves the price, within minutes. Over days, fundamentals forecast no better than a coin flip.</li>
+    <li><b>Most to least:</b> central bank decisions and statements, US payrolls, then early US activity data (GDP advance, retail sales, durable goods, ISM, consumer confidence), inflation (sign depends on the central bank), trade balance, jobless claims, then foreign data for its own currency.</li>
+    <li><b>Direction is consistent but not fixed.</b> Better US data lifts the dollar and worse data sinks it, and bad news moves it more. In crises the sign can flip: the dollar rose on bad US news in 2008–09.</li>
+    <li><b>In our data the payrolls hour moves each pair 3.3–5× a normal hour</b>, and the dollar follows US Treasury yields closely in that hour (correlation 0.78). There is no follow-through in the hours after.</li>
+    <li><b>For hourly-bar strategies, news is a risk filter, not an entry signal.</b> Use it to avoid entries and price higher costs around releases. Trade related markets instead: yields, risk appetite, oil, commodities.</li>
+  </ul>
+</section>
+
+<h2>1. What moves FX, ranked</h2>
+<p class="sub">Each row is the market's reaction to the surprise (actual minus consensus). "Better" means a stronger economy or a tighter central bank for that currency.</p>
+<div class="tablebox"><table>
+<thead><tr><th>Rank</th><th>Event</th><th>If better than expected</th><th>If worse than expected</th><th>Speed and persistence</th><th>Evidence</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><b>Central bank decisions and statements</b> (Fed for all USD pairs; ECB, BoE, BoJ, BoC, RBA for their own)</td><td><span class="pill up">Currency up</span> on tighter policy</td><td><span class="pill down">Currency down</span> on looser policy</td><td>Absorbed in 30–40 min. The statement's surprise explains most of the move.</td><td><span class="tag">Rosa 2011</span><span class="tag">Andersen et al. 2003</span><span class="tag">Cheung &amp; Chinn 2001</span></td></tr>
+<tr><td class="num">2</td><td><b>US nonfarm payrolls</b> (plus unemployment rate and prior-month revision)</td><td><span class="pill up">USD up</span></td><td><span class="pill down">USD down</span> by more</td><td>Price jumps within minutes; volatility stays high for about an hour.</td><td><span class="tag">Andersen et al. 2003</span><span class="tag">Ederington, Guan &amp; Yang 2019</span><span class="tag">Goldberg &amp; Grisse 2015</span><span class="tag">our data</span></td></tr>
+<tr><td class="num">3</td><td><b>Early US activity data:</b> GDP advance, retail sales, durable goods, ISM manufacturing, consumer confidence</td><td><span class="pill up">USD up</span></td><td><span class="pill down">USD down</span></td><td>Minutes. The earliest release in a category matters; later ones (factory orders, final GDP, personal spending) barely move prices.</td><td><span class="tag">Andersen et al. 2003</span><span class="tag">CXO summary</span></td></tr>
+<tr><td class="num">4</td><td><b>Inflation</b> (CPI, core inflation)</td><td colspan="2"><span class="pill cond">Depends on the central bank.</span> If it fights inflation, higher CPI means expected hikes and a stronger currency; if it tolerates inflation, the sign can reverse.</td><td>Minutes. CPI mattered more than PPI in the 1990s; core inflation was significant in 2000–11.</td><td><span class="tag">Andersen et al. 2003</span><span class="tag">Goldberg &amp; Grisse 2015</span></td></tr>
+<tr><td class="num">5</td><td><b>US trade balance</b></td><td><span class="pill up">USD up</span> on a smaller deficit</td><td><span class="pill down">USD down</span></td><td>Large in the 1990s (it explained up to half of 5-minute moves after release). Traders still watch it; likely smaller today.</td><td><span class="tag">Andersen et al. 2003</span><span class="tag">Cheung &amp; Chinn 2001</span></td></tr>
+<tr><td class="num">6</td><td><b>US weekly jobless claims</b></td><td><span class="pill up">USD up</span> on fewer claims</td><td><span class="pill down">USD down</span> on more claims</td><td>Small but significant on every pair.</td><td><span class="tag">Andersen et al. 2003</span></td></tr>
+<tr><td class="num">7</td><td><b>Foreign data</b> for its own currency</td><td><span class="pill up">That currency up</span></td><td><span class="pill down">That currency down</span></td><td>Smaller than US data. German data rarely moved the mark, partly because its release times were not known in advance.</td><td><span class="tag">Andersen et al. 2003</span></td></tr>
+<tr><td class="num">8</td><td><b>Media sentiment</b> (unscheduled news)</td><td colspan="2"><span class="pill contra">Contrarian:</span> very positive coverage of a currency predicts lower returns later; very negative predicts higher.</td><td>Builds and reverses over weeks.</td><td><span class="tag">Filippou, Taylor &amp; Wang 2023</span></td></tr>
+</tbody></table></div>
+
+<div class="chart" id="c-abdv">
+  <h3>How far the dollar moves on a typical surprise</h3>
+  <p class="note">Percent move in DM/$ in the 5 minutes after a one-standard-deviation higher-than-expected print, 1992–98. Positive = dollar up. Faded bars are not statistically significant. <span class="screen-only">Hover for all five currencies.</span><span class="print-only">All five currencies are in the table below.</span> Source: Andersen et al. (2003), Table 3.</p>
+  <div class="legend"><span><i style="background:var(--up)"></i>Higher print lifts the dollar</span><span><i style="background:var(--down)"></i>Higher print weakens the dollar</span></div>
+  <div class="plot"></div>
+</div>
+<div class="tablebox print-only keep"><table id="t-abdv"><thead><tr><th>Announcement (1-s.d. higher print)</th><th class="num">Pound/$</th><th class="num">Yen/$</th><th class="num">DM/$</th><th class="num">CHF/$</th><th class="num">Euro/$</th></tr></thead><tbody></tbody></table></div>
+<p class="small">For scale: in that sample only 0.7% of 5-minute moves exceeded 0.10%, and the typical DM/$ spread was about 0.06%. A payrolls surprise moved the rate by 0.16%. German data enters with the opposite sign because stronger German data lifts the mark against the dollar.</p>
+
+<h2>2. Which way to trade: positive and negative impact</h2>
+<div class="callout"><b>On trading the negatives "in reverse".</b> A worse-than-expected release is not a reason to flip a strategy. It is a signal to <b>sell</b> that currency, in the same direction as the news, and in practice it moves the price more than good news does. Only the contrarian rows below (marked pink) are trades against the move, and the crisis rule can turn bad US news into a stronger dollar.</div>
+<div class="tablebox"><table>
+<thead><tr><th>Signal</th><th>Positive case → trade</th><th>Negative case → trade</th><th>Type</th><th>Evidence</th></tr></thead>
+<tbody>
+<tr><td>US data beats or misses (payrolls, GDP, retail sales, ISM, durable goods, confidence)</td><td>Beat: <span class="pill up">buy USD</span> sell EUR/USD, GBP/USD, AUD/USD; buy USD/CAD, USD/JPY</td><td>Miss: <span class="pill down">sell USD</span> the opposite; misses move more (our data: −22 to −36 bp vs +3 to +24 bp on average)</td><td>Follow</td><td><span class="tag">Andersen et al.</span><span class="tag">our data</span></td></tr>
+<tr><td>US jobless claims</td><td>Fewer claims: buy USD</td><td>More claims: sell USD</td><td>Follow</td><td><span class="tag">Andersen et al.</span></td></tr>
+<tr><td>Fed decision or statement</td><td>Hawkish surprise: buy USD</td><td>Dovish surprise: sell USD</td><td>Follow</td><td><span class="tag">Rosa 2011</span></td></tr>
+<tr><td>US CPI</td><td>Hot CPI: usually buy USD while the Fed is fighting inflation</td><td>Soft CPI: sell USD</td><td><span class="pill cond">Conditional</span></td><td><span class="tag">Andersen et al. (conclusion)</span></td></tr>
+<tr><td>Euro-area, UK, Australian, Canadian data</td><td>Beat: buy that currency</td><td>Miss: sell it</td><td>Follow</td><td><span class="tag">Andersen et al.</span></td></tr>
+<tr><td>Risk appetite (stocks, volatility)</td><td>Risk-on: buy AUD, NZD, CAD; sell JPY, CHF</td><td>Risk-off: buy JPY, CHF (and USD in a crisis); sell AUD, NZD, CAD</td><td>Follow</td><td><span class="tag">Ranaldo &amp; Söderlind 2010</span><span class="tag">Fratzscher 2009</span><span class="tag">our data</span></td></tr>
+<tr><td>Oil price</td><td>Oil up: buy CAD (sell USD/CAD)</td><td>Oil down: sell CAD</td><td>Follow, daily, short-lived</td><td><span class="tag">Ferraro, Rogoff &amp; Rossi 2015</span></td></tr>
+<tr><td>Commodity export prices</td><td>Up: buy AUD, NZD</td><td>Down: sell AUD, NZD</td><td>Follow</td><td><span class="tag">Chen &amp; Rogoff</span></td></tr>
+<tr><td>Media sentiment on a currency</td><td>Very positive: <span class="pill contra">sell it</span></td><td>Very negative: <span class="pill contra">buy it</span></td><td>Contrarian</td><td><span class="tag">Filippou, Taylor &amp; Wang 2023</span></td></tr>
+<tr><td>Move into the 4 pm London fix, month-end</td><td>Up into the fix: <span class="pill contra">fade after</span></td><td>Down into the fix: <span class="pill contra">fade after</span></td><td>Contrarian</td><td><span class="tag">Evans 2018</span></td></tr>
+<tr><td>Crisis regime (high volatility)</td><td colspan="2"><span class="pill cond">Sign can flip:</span> in 2008–09 the dollar rose on bad US data; when the VIX is high, good payrolls lift the dollar less.</td><td>Conditional</td><td><span class="tag">Fratzscher 2009</span><span class="tag">Goldberg &amp; Grisse 2015</span></td></tr>
+</tbody></table></div>
+
+<h2>3. When it matters</h2>
+<div class="tablebox"><table>
+<thead><tr><th>Condition</th><th>What happens</th><th>Evidence</th></tr></thead>
+<tbody>
+<tr><td>Release in line with forecasts</td><td>Price barely moves, but trading volume still spikes.</td><td><span class="tag">Andersen et al.</span><span class="tag">Chaboud, Chernenko &amp; Wright 2008</span></td></tr>
+<tr><td>Bad news, especially in good times</td><td>Larger move than equal-sized good news. Strongest in yen, mark and franc reactions to payrolls and the trade balance; largely absent in pound and euro.</td><td><span class="tag">Andersen et al.</span><span class="tag">our data</span></td></tr>
+<tr><td>Earlier release in a category</td><td>Moves the price; later releases that repeat the information do not.</td><td><span class="tag">Andersen et al.</span></td></tr>
+<tr><td>Exact release time known in advance</td><td>Sharp reaction. Unknown timing spreads the adjustment over hours or days.</td><td><span class="tag">Andersen et al.</span></td></tr>
+<tr><td>High risk aversion (VIX up)</td><td>Good US news lifts the dollar less; in a crisis bad US news can lift it.</td><td><span class="tag">Goldberg &amp; Grisse</span><span class="tag">Fratzscher 2009</span></td></tr>
+<tr><td>Over the years</td><td>Which releases matter shifts; interest rates are the constant. A thesis finds the payrolls effect fading in 2017–20 (weak evidence).</td><td><span class="tag">Cheung &amp; Chinn</span><span class="tag">Goldberg &amp; Grisse</span></td></tr>
+<tr><td>Within the release</td><td>Price adjusts in the first minute; volatility stays high about 15 minutes to an hour; Fed surprises are absorbed in 30–40 minutes.</td><td><span class="tag">Ederington &amp; Lee 1993</span><span class="tag">Andersen et al.</span><span class="tag">Rosa 2011</span></td></tr>
+<tr><td>Share of all movement</td><td>Scheduled news directly explains under 10% of daily variance, over 30% including its effect through order flow. Order flow alone explains over 60% of daily DM/$ moves.</td><td><span class="tag">Evans &amp; Lyons 2008</span><span class="tag">Evans &amp; Lyons 2002</span></td></tr>
+</tbody></table></div>
+
+<div class="chart" id="c-hod">
+  <h3>When in the day our pairs move</h3>
+  <p class="note">Median size of an hourly move by hour of day (UTC), July 2020 – June 2025. Shaded: London open (07–09) and US data plus the London–New York overlap (12–16). US releases at 8:30 New York time land at 12:30 or 13:30 UTC; Fed decisions at 18:00 or 19:00 UTC.</p>
+  <div class="legend" id="hod-legend"></div>
+  <div class="plot"></div>
+</div>
+
+<h2>4. What our own data shows</h2>
+<p class="sub">60 US payrolls releases, July 2020 – May 2025. Release dates come from the BLS scheduling rule; a few may differ from the official calendar.</p>
+<div class="grid2">
+  <div class="chart" id="c-nfp">
+    <h3>Payrolls hour vs a normal hour</h3>
+    <p class="note">Median size of the hourly move, basis points.</p>
+    <div class="legend"><span><i style="background:var(--s1)"></i>Payrolls hour</span><span><i style="background:var(--s2)"></i>Same hour, other Fridays</span><span><i style="background:var(--s3)"></i>Any hour</span></div>
+    <div class="plot"></div>
+  </div>
+  <div class="chart" id="c-bond">
+    <h3>The dollar follows Treasury yields on payrolls day</h3>
+    <p class="note">Correlation of the dollar's move with the move in US yields (from Treasury bond prices).</p>
+    <div class="legend"><span><i style="background:var(--s1)"></i>Payrolls hour</span><span><i style="background:var(--s2)"></i>All other hours</span></div>
+    <div class="plot"></div>
+  </div>
+</div>
+<div class="chart" id="c-asym">
+  <h3>Bad payrolls move the dollar more than good ones</h3>
+  <p class="note">Average dollar move in the payrolls hour, basis points (positive = dollar up). "Good" = yields rose in that hour (43 releases); "bad" = yields fell (17 releases). The yield move stands in for the surprise, since consensus forecasts are paid data.</p>
+  <div class="legend"><span><i style="background:var(--up)"></i>Good report</span><span><i style="background:var(--down)"></i>Bad report</span></div>
+  <div class="plot"></div>
+</div>
+<h3>No follow-through after the release hour</h3>
+<div class="tablebox keep"><table id="t-cont">
+<thead><tr><th>Pair</th><th class="num">Next 1 h corr.</th><th class="num">Same direction, next 1 h</th><th class="num">Next 3 h corr.</th><th class="num">Next 6 h corr.</th></tr></thead><tbody></tbody></table></div>
+<p class="small">Correlation between the payrolls-hour move and the move over the following hours. Values near zero and hit rates near 50% mean chasing the move with hourly bars has no edge. The slight next-hour reversal on EUR, GBP and AUD is not significant with 60 events.</p>
+
+<h2>5. Related and proxy signals</h2>
+<div class="tablebox"><table>
+<thead><tr><th>Proxy</th><th>Pairs</th><th>Relationship</th><th>Evidence</th></tr></thead>
+<tbody>
+<tr><td><b>US Treasury yields</b> (2-year, 10-year, bond futures)</td><td>All USD pairs, USD/JPY most</td><td>The dollar rises with yields. In the payrolls hour the correlation is 0.78 (0.51 for USD/CAD), so yields are a free real-time read of the surprise. Daily correlation with USD/JPY is 0.42.</td><td><span class="tag">our data</span></td></tr>
+<tr><td><b>Dollar index</b></td><td>All</td><td>One common dollar factor. Daily correlation with our pairs is 0.62–0.97, and the pairs' dollar legs correlate 0.26–0.75 with each other, so five pairs are partly one bet.</td><td><span class="tag">Lustig, Roussanov &amp; Verdelhan 2011</span><span class="tag">our data</span></td></tr>
+<tr><td><b>Interest-rate gap (carry)</b></td><td>High- vs low-yield currencies</td><td>High-yielders pay carry but crash when risk appetite and funding dry up (negatively skewed returns).</td><td><span class="tag">Brunnermeier, Nagel &amp; Pedersen 2008</span></td></tr>
+<tr><td><b>Stocks and volatility</b> (S&amp;P 500, VIX)</td><td>JPY, CHF vs AUD, NZD, CAD</td><td>Yen and franc rise when stocks fall and volatility rises. Our data has no VIX; bitcoin as a crude risk proxy: the dollar weakens on risk-on days (−0.18 to −0.27) and AUD strengthens (+0.27).</td><td><span class="tag">Ranaldo &amp; Söderlind 2010</span><span class="tag">our data</span></td></tr>
+<tr><td><b>Oil</b></td><td>USD/CAD</td><td>Oil predicts CAD at daily frequency; the effect is short-lived and washes out monthly.</td><td><span class="tag">Ferraro, Rogoff &amp; Rossi 2015</span></td></tr>
+<tr><td><b>Commodity export prices</b></td><td>AUD, NZD</td><td>Strong, stable link with the exchange rate. AUD and NZD move together (daily correlation 0.89 in our data).</td><td><span class="tag">Chen &amp; Rogoff</span><span class="tag">our data</span></td></tr>
+<tr><td><b>Futures positioning</b> (CFTC weekly)</td><td>All</td><td>Explains same-week moves (75% direction hit rate) but does not predict the next week.</td><td><span class="tag">Klitgaard &amp; Weir 2004</span></td></tr>
+<tr><td><b>Early labour indicators</b> (ADP, claims, ISM employment)</td><td>USD</td><td>Watched by traders as previews of payrolls. Not tested here and not covered by the papers above.</td><td><span class="tag">not verified</span></td></tr>
+</tbody></table></div>
+
+<h2>6. What is uncertain or unsolved</h2>
+<div class="tablebox"><table>
+<thead><tr><th>Question</th><th>State of the evidence</th></tr></thead>
+<tbody>
+<tr><td>Why fundamentals do not forecast exchange rates</td><td>Open since Meese and Rogoff (1983): models beat a random walk only rarely out of sample.</td></tr>
+<tr><td>How news reaches prices</td><td>Partly answered: about two-thirds of the effect runs through order flow (Evans &amp; Lyons 2008).</td></tr>
+<tr><td>Whether the sign is stable</td><td>No. Inflation news depends on the central bank's stance; the dollar's response flipped in 2008–09; risk conditions change the size.</td></tr>
+<tr><td>Measuring the surprise</td><td>Needs consensus forecasts, which are paid data. Yield moves are a usable proxy but mix in other news.</td></tr>
+<tr><td>Unscheduled and qualitative news</td><td>Flagged as an open problem by Andersen et al.; sentiment scores now help (Filippou et al.) but methods are not standard.</td></tr>
+<tr><td>Today's ranking</td><td>The best-identified rankings use 1990s–2000s data. Trade balance has likely faded; CPI likely rose after 2021 (our judgement, not a sourced finding).</td></tr>
+<tr><td>Non-US news</td><td>Smaller effects and far less studied.</td></tr>
+<tr><td>Trading it with hourly bars</td><td>The reaction is over within minutes; our data shows no follow-through in the next 1–6 hours.</td></tr>
+</tbody></table></div>
+
+<h2>7. What you may not have considered</h2>
+<div class="tablebox"><table>
+<thead><tr><th>Risk</th><th>Item</th><th>Why it matters for us</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td><span class="sev high">High</span></td><td><b>Intervention in USD/JPY</b></td><td>Japan sold dollars for yen on 22 Sep 2022 (¥2.8tn), 21–24 Oct 2022 (¥6.35tn), 29 Apr and 1 May 2024 (¥9.79tn) and 11–12 Jul 2024 (about ¥5.5tn). The 2024 episodes fall inside our holdout.</td><td>Flag these days in backtests; check Nelstein1's USD/JPY losses around them.</td></tr>
+<tr><td><span class="sev high">High</span></td><td><b>Costs jump at releases</b></td><td>Volume spikes even on in-line releases and stops slip. Our slippage scales with the past 24 hours, so it reacts after the event.</td><td>Add an event-hour cost bump.</td></tr>
+<tr><td><span class="sev high">High</span></td><td><b>Hourly bars miss the jump</b></td><td>The move is over before our next-open fill.</td><td>Use news as an entry filter, not a signal.</td></tr>
+<tr><td><span class="sev med">Medium</span></td><td><b>One dollar factor</b></td><td>Our five pairs are partly one USD bet, so diversification is weaker than it looks.</td><td>Keep the per-currency cap; consider a dollar-neutral overlay.</td></tr>
+<tr><td><span class="sev med">Medium</span></td><td><b>Carry crash risk</b></td><td>High-yielders fall fast in risk-off.</td><td>Give the carry strategy a risk-off switch.</td></tr>
+<tr><td><span class="sev med">Medium</span></td><td><b>Month-end fix flows</b></td><td>Large, reversing moves around 4 pm London on the last trading day.</td><td>Avoid entries then, or test a fade.</td></tr>
+<tr><td><span class="sev med">Medium</span></td><td><b>Release clustering</b></td><td>Canada's jobs report often comes out at the same time as US payrolls (our understanding; to verify), which fits USD/CAD's weaker link to US yields.</td><td>Map both countries' calendars for USD/CAD.</td></tr>
+<tr><td><span class="sev med">Medium</span></td><td><b>Revised data</b></td><td>Macro series get revised; using revised values is look-ahead.</td><td>Use first-release vintages (ALFRED) for any macro feature.</td></tr>
+<tr><td><span class="sev low">Low</span></td><td><b>Positioning data is late</b></td><td>Weekly and released days after; explains, does not predict.</td><td>Use for context only.</td></tr>
+</tbody></table></div>
+
+<h2>8. What this means for the project</h2>
+<div class="tablebox"><table>
+<thead><tr><th>Step</th><th>What</th><th>Data</th></tr></thead>
+<tbody>
+<tr><td>News calendar block</td><td>Flag high-impact release windows; block new entries and raise costs around them; test on SMA, MACD, carry and Nelstein1.</td><td>Payrolls from the BLS rule, Fed dates, BLS CPI dates, ECB/BoE/BoJ/BoC/RBA decision dates</td></tr>
+<tr><td>Surprise proxy</td><td>Label each release beat or miss from the yield move, for research without paid consensus data.</td><td>US Treasury bond file already in the dataset</td></tr>
+<tr><td>Risk regime</td><td>Risk-off switch for carry and AUD; safe-haven tilt toward JPY.</td><td>VIX and S&amp;P 500 (FRED)</td></tr>
+<tr><td>Commodity features</td><td>Oil for CAD; commodity prices for AUD and NZD.</td><td>WTI and commodity indices (FRED)</td></tr>
+<tr><td>Intervention flags</td><td>Mark Japanese intervention days for USD/JPY.</td><td>Japan Ministry of Finance reports</td></tr>
+</tbody></table></div>
+
+<h2>Sources</h2>
+<p class="small">Andersen et al. (2003) and Goldberg &amp; Grisse (2015) were read in full; the rest from abstracts, publisher pages and summaries. Check exact figures against the originals before citing.</p>
+<ol class="refs">
+<li>Andersen, Bollerslev, Diebold &amp; Vega (2003). Micro Effects of Macro Announcements. <i>AER</i> 93(1). <a href="https://www.nber.org/papers/w8959">nber.org/papers/w8959</a></li>
+<li>Goldberg &amp; Grisse (2013/2015). Time Variation in Asset Price Responses to Macro Announcements. NY Fed SR 626. <a href="https://www.newyorkfed.org/research/staff_reports/sr626.pdf">newyorkfed.org</a></li>
+<li>Ederington &amp; Lee (1993). How Markets Process Information. <i>Journal of Finance</i> 48(4). <a href="https://ideas.repec.org/a/bla/jfinan/v48y1993i4p1161-91.html">ideas.repec.org</a></li>
+<li>Evans &amp; Lyons (2008). How Is Macro News Transmitted to Exchange Rates? <i>JFE</i> 88(1). <a href="https://econpapers.repec.org/RePEc:eee:jfinec:v:88:y:2008:i:1:p:26-50">econpapers.repec.org</a></li>
+<li>Evans &amp; Lyons (2002). Order Flow and Exchange Rate Dynamics. <i>JPE</i> 110(1). <a href="https://nber.org/papers/w7317">nber.org/papers/w7317</a></li>
+<li>Meese &amp; Rogoff (1983). Empirical Exchange Rate Models of the Seventies. <a href="https://users.ssc.wisc.edu/~behansen/390/MeeseRogoff.pdf">ssc.wisc.edu</a></li>
+<li>Rosa (2011). The High-Frequency Response of Exchange Rates to Monetary Policy Actions and Statements. <i>JBF</i> 35(2). <a href="https://econpapers.repec.org/RePEc:eee:jbfina:v:35:y:2011:i:2:p:478-489">econpapers.repec.org</a></li>
+<li>Cheung &amp; Chinn (2001). Currency Traders and Exchange Rate Dynamics. <i>JIMF</i> 20(4). <a href="https://econpapers.repec.org/RePEc:eee:jimfin:v:20:y:2001:i:4:p:439-471">econpapers.repec.org</a></li>
+<li>Ederington, Guan &amp; Yang (2019). The Impact of the U.S. Employment Report on Exchange Rates. <i>JIMF</i> 90. <a href="https://ideas.repec.org/a/eee/jimfin/v90y2019icp257-267.html">ideas.repec.org</a></li>
+<li>CXO Advisory. Which Economic Data Announcements Matter? <a href="https://cxoadvisory.com/economic-indicators/which-economic-data-announcements-matter">cxoadvisory.com</a></li>
+<li>Filippou, Taylor &amp; Wang (2023). Media Sentiment and Currency Reversals. <i>JFQA</i>. <a href="https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/media-sentiment-and-currency-reversals/84CEB4F2EEE1521C3C694F547AC35A0B">cambridge.org</a></li>
+<li>Neely &amp; Dey (2010). A Survey of Announcement Effects on Foreign Exchange Returns. St. Louis Fed <i>Review</i> 92(5). <a href="https://ideas.repec.org/a/fip/fedlrv/y2010isepp417-464nv.92no.5.html">ideas.repec.org</a></li>
+<li>Fratzscher (2009). What Explains Global Exchange Rate Movements During the Financial Crisis? <i>JIMF</i> 28(8). <a href="https://ideas.repec.org/a/eee/jimfin/v28y2009i8p1390-1407.html">ideas.repec.org</a></li>
+<li>Chaboud, Chernenko &amp; Wright (2008). Trading Activity and Macroeconomic Announcements in High-Frequency Exchange Rate Data. <i>JEEA</i> 6(2–3). <a href="https://econpapers.repec.org/RePEc:tpr:jeurec:v:6:y:2008:i:2-3:p:589-596">econpapers.repec.org</a></li>
+<li>Ranaldo &amp; Söderlind (2010). Safe Haven Currencies. <i>Review of Finance</i> 14(3). <a href="https://econpapers.repec.org/RePEc:oup:revfin:v:14:y:2010:i:3:p:385-407">econpapers.repec.org</a></li>
+<li>Ferraro, Rogoff &amp; Rossi (2015). Can Oil Prices Forecast Exchange Rates? <i>JIMF</i> 54. <a href="https://www.nber.org/papers/W17998">nber.org/papers/w17998</a></li>
+<li>Chen &amp; Rogoff. Commodity Currencies and Empirical Exchange Rate Puzzles (IMF working paper, 2002). <a href="https://www.imf.org/en/publications/wp/issues/2016/12/30/commodity-currencies-and-empirical-exchange-rate-puzzles-15638">imf.org</a></li>
+<li>Brunnermeier, Nagel &amp; Pedersen (2008). Carry Trades and Currency Crashes. NBER Macroeconomics Annual. <a href="https://www.nber.org/papers/w14473">nber.org/papers/w14473</a></li>
+<li>Lustig, Roussanov &amp; Verdelhan (2011). Common Risk Factors in Currency Markets. <i>RFS</i> 24(11). <a href="https://papers.ssrn.com/abstract=1159046">ssrn.com</a></li>
+<li>Evans (2018). Forex Trading and the WMR Fix. <i>JBF</i> 87. <a href="https://ideas.repec.org/a/eee/jbfina/v87y2018icp233-247.html">ideas.repec.org</a></li>
+<li>Klitgaard &amp; Weir (2004). Exchange Rate Changes and Net Positions of Speculators in the Futures Market. NY Fed <i>EPR</i> 10(1). <a href="https://www.newyorkfed.org/research/epr/04v10n1/0405klit.html">newyorkfed.org</a></li>
+<li>Japan Ministry of Finance, foreign exchange intervention reports: <a href="https://www.mof.go.jp/english/policy/international_policy/reference/feio/quarter/2022_4Qe.html">Q4 2022</a>, <a href="https://www.mof.go.jp/english/policy/international_policy/reference/feio/quarter/2024_2Qe.html">Q2 2024</a>; July 2024 amounts as reported by <a href="https://bnnbloomberg.ca/business/international/2024/11/07/japan-intervened-twice-last-quarter-to-bring-yen-below-160">BNN Bloomberg</a>.</li>
+<li>Our data: course hourly candles, July 2020 – June 2025 (EUR/USD, GBP/USD, AUD/USD, USD/CAD, USD/JPY, US Treasury bond, dollar index, bitcoin, NZD/USD).</li>
+</ol>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const D = {"pairs": ["EURUSD", "GBPUSD", "AUDUSD", "USDCAD", "USDJPY"], "abdv": [{"name": "US nonfarm payrolls", "vals": [0.098, 0.084, 0.161, 0.144, 0.08], "sig": [true, true, true, true, true]}, {"name": "US trade balance", "vals": [0.092, 0.112, 0.138, 0.124, 0.084], "sig": [true, true, true, true, true]}, {"name": "US durable goods orders", "vals": [0.055, 0.027, 0.088, 0.085, 0.043], "sig": [true, true, true, true, true]}, {"name": "US GDP (advance)", "vals": [0.029, 0.036, 0.08, 0.079, 0.061], "sig": [false, false, true, true, true]}, {"name": "Fed funds target", "vals": [0.048, 0.05, 0.072, 0.072, 0.032], "sig": [true, true, true, true, false]}, {"name": "US retail sales", "vals": [0.048, 0.019, 0.067, 0.059, 0.041], "sig": [true, false, true, true, true]}, {"name": "US consumer confidence", "vals": [0.037, 0.022, 0.058, 0.054, 0.035], "sig": [true, true, true, true, true]}, {"name": "US ISM (NAPM) manufacturing", "vals": [0.028, 0.012, 0.039, 0.036, 0.025], "sig": [true, true, true, true, true]}, {"name": "US CPI", "vals": [0.016, 0.012, 0.031, 0.035, 0.015], "sig": [false, false, true, true, false]}, {"name": "US industrial production", "vals": [0.02, 0.019, 0.029, 0.034, 0.018], "sig": [true, true, true, true, true]}, {"name": "US personal consumption", "vals": [-0.003, 0.005, -0.007, -0.011, 0.007], "sig": [false, false, false, false, false]}, {"name": "US initial jobless claims", "vals": [-0.014, -0.012, -0.022, -0.026, -0.019], "sig": [true, true, true, true, true]}, {"name": "German industrial production", "vals": [-0.011, -0.009, -0.017, -0.015, -0.005], "sig": [true, false, true, true, false]}, {"name": "German money supply (M3)", "vals": [-0.02, 0.0, -0.033, -0.02, -0.023], "sig": [true, false, true, true, true]}], "nfp": {"EURUSD": [20.62, 7.29, 4.15, 2.26], "GBPUSD": [19.76, 8.6, 4.76, 1.9], "AUDUSD": [21.62, 8.74, 6.49, 1.92], "USDCAD": [14.64, 7.07, 4.01, 1.76], "USDJPY": [22.68, 7.83, 4.7, 2.84]}, "bond": {"EURUSD": {"pair": "EURUSD", "corr_nfp": 0.7848894993034213, "corr_other": 0.17374406956087754, "same_dir_nfp": 0.7, "usd_move_good": 14.602467320289245, "usd_move_bad": -22.527891173303647, "abs_good": 26.182676783458604, "abs_bad": 30.13308645050163, "n_good": 43, "n_bad": 17}, "GBPUSD": {"pair": "GBPUSD", "corr_nfp": 0.778482279683089, "corr_other": 0.16429665332242202, "same_dir_nfp": 0.7333333333333333, "usd_move_good": 15.66938345475383, "usd_move_bad": -23.209945214619843, "abs_good": 27.271262960271986, "abs_bad": 28.146079895599897, "n_good": 43, "n_bad": 17}, "AUDUSD": {"pair": "AUDUSD", "corr_nfp": 0.7802965925109216, "corr_other": 0.17590904535854787, "same_dir_nfp": 0.6666666666666666, "usd_move_good": 13.82262531591228, "usd_move_bad": -33.63299144125907, "abs_good": 29.015903188760745, "abs_bad": 36.75431484545312, "n_good": 43, "n_bad": 17}, "USDCAD": {"pair": "USDCAD", "corr_nfp": 0.5114985796679057, "corr_other": 0.09534909898425319, "same_dir_nfp": 0.5833333333333334, "usd_move_good": 3.3395624626495315, "usd_move_bad": -13.529473791420086, "abs_good": 19.036980632897208, "abs_bad": 21.727271181842355, "n_good": 43, "n_bad": 17}, "USDJPY": {"pair": "USDJPY", "corr_nfp": 0.7870257366724632, "corr_other": 0.4182495931693987, "same_dir_nfp": 0.75, "usd_move_good": 23.64007509992309, "usd_move_bad": -36.31387047544725, "abs_good": 30.117610731473658, "abs_bad": 38.46617716652395, "n_good": 43, "n_bad": 17}}, "cont": {"EURUSD": {"pair": "EURUSD", "corr_next1h": -0.17387273525192262, "same_dir_next1h": 0.38333333333333336, "corr_next3h": -0.006236394225193842, "same_dir_next3h": 0.5333333333333333, "corr_next6h": 0.04176728421174823, "same_dir_next6h": 0.5166666666666667}, "GBPUSD": {"pair": "GBPUSD", "corr_next1h": -0.17787193843015403, "same_dir_next1h": 0.45, "corr_next3h": -0.06848618316302299, "same_dir_next3h": 0.5, "corr_next6h": 0.017295669576043626, "same_dir_next6h": 0.5}, "AUDUSD": {"pair": "AUDUSD", "corr_next1h": -0.18253572319759287, "same_dir_next1h": 0.45, "corr_next3h": -0.007359653634410934, "same_dir_next3h": 0.4666666666666667, "corr_next6h": 0.02958822680035671, "same_dir_next6h": 0.43333333333333335}, "USDCAD": {"pair": "USDCAD", "corr_next1h": -0.027281731815297652, "same_dir_next1h": 0.5333333333333333, "corr_next3h": 0.08648510576216402, "same_dir_next3h": 0.48333333333333334, "corr_next6h": 0.19323143428338818, "same_dir_next6h": 0.45}, "USDJPY": {"pair": "USDJPY", "corr_next1h": 0.00834800414203568, "same_dir_next1h": 0.5, "corr_next3h": 0.18983407896850238, "same_dir_next3h": 0.48333333333333334, "corr_next6h": 0.16581657912348433, "same_dir_next6h": 0.5166666666666667}}, "hod": {"EURUSD": [4.166, 4.002, 3.194, 2.489, 2.612, 3.128, 4.568, 6.975, 6.926, 5.582, 5.189, 5.438, 6.97, 8.242, 8.182, 7.345, 5.381, 4.379, 4.167, 3.589, 2.784, 1.753, 1.956, 2.377], "GBPUSD": [4.273, 4.266, 3.583, 2.951, 3.058, 3.393, 5.785, 8.088, 7.978, 6.925, 6.649, 6.657, 7.895, 8.825, 10.222, 8.119, 6.222, 4.97, 4.968, 3.889, 3.202, 1.924, 2.341, 2.782], "AUDUSD": [7.378, 8.757, 7.05, 6.348, 5.418, 6.168, 7.797, 8.928, 8.362, 7.49, 6.433, 6.795, 8.412, 10.423, 11.44, 9.887, 6.891, 5.896, 6.146, 5.247, 4.254, 2.847, 3.59, 4.919], "USDCAD": [3.665, 3.944, 3.392, 2.792, 2.491, 3.102, 3.891, 5.138, 4.91, 4.515, 3.973, 4.553, 6.348, 7.704, 8.608, 7.276, 5.562, 4.703, 4.554, 4.257, 3.394, 2.064, 2.335, 2.551], "USDJPY": [7.618, 5.431, 4.248, 3.65, 3.725, 4.089, 5.376, 6.529, 5.968, 4.899, 4.808, 4.739, 7.433, 7.859, 8.345, 6.919, 4.638, 4.009, 3.999, 3.149, 2.937, 2.558, 3.118, 4.21]}, "daily": {"Dollar index": {"EURUSD": 0.9646496560970872, "GBPUSD": 0.8266132464230971, "AUDUSD": 0.7295673131689459, "USDCAD": 0.6499146437096587, "USDJPY": 0.6219293665141605}, "UST bond": {"EURUSD": 0.18422202799949258, "GBPUSD": 0.1905562669085744, "AUDUSD": 0.15820090541455942, "USDCAD": 0.07751823794890515, "USDJPY": 0.4242928580904045}, "Bitcoin": {"EURUSD": -0.17553960218519787, "GBPUSD": -0.21640864510348554, "AUDUSD": -0.2743077887108832, "USDCAD": -0.2648290669511409, "USDJPY": -0.027981054586923865}, "NZDUSD": {"EURUSD": 0.6649770481041455, "GBPUSD": 0.7034094872863927, "AUDUSD": 0.8939551225146034, "USDCAD": 0.6942938818714648, "USDJPY": 0.4419571386148366}}, "paircorr": {"EURUSD": {"EURUSD": 1.0, "GBPUSD": 0.75, "AUDUSD": 0.66, "USDCAD": 0.57, "USDJPY": 0.48}, "GBPUSD": {"EURUSD": 0.75, "GBPUSD": 1.0, "AUDUSD": 0.7, "USDCAD": 0.61, "USDJPY": 0.43}, "AUDUSD": {"EURUSD": 0.66, "GBPUSD": 0.7, "AUDUSD": 1.0, "USDCAD": 0.75, "USDJPY": 0.4}, "USDCAD": {"EURUSD": 0.57, "GBPUSD": 0.61, "AUDUSD": 0.75, "USDCAD": 1.0, "USDJPY": 0.26}, "USDJPY": {"EURUSD": 0.48, "GBPUSD": 0.43, "AUDUSD": 0.4, "USDCAD": 0.26, "USDJPY": 1.0}}};
+const NS = "http://www.w3.org/2000/svg";
+const tip = document.getElementById("tip");
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.hidden = false;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > window.innerWidth - 8) x = ev.clientX - w - pad;
+  if (y + h > window.innerHeight - 8) y = ev.clientY - h - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.hidden = true; }
+function niceTicks(min, max, n) {
+  const span = max - min, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n) || mag * 10;
+  const out = []; for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+const fmt = (v, d = 2) => (v > 0 ? "+" : "") + v.toFixed(d);
+
+/* Diverging horizontal bars (Andersen et al., DM/$ column) */
+(function () {
+  const rows = D.abdv, W = 760, rowH = 26, top = 8, left = 210, right = 70, H = top + rows.length * rowH + 30;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Dollar move per one standard deviation surprise by announcement" },
+    document.querySelector("#c-abdv .plot"));
+  const vals = rows.map(r => r.vals[2]);
+  const lo = Math.min(-0.05, ...vals), hi = Math.max(...vals) * 1.05;
+  const x = v => left + (v - lo) / (hi - lo) * (W - left - right);
+  niceTicks(lo, hi, 6).forEach(t => {
+    el("line", { x1: x(t), x2: x(t), y1: top, y2: H - 24, style: "stroke:var(--rule);stroke-width:1" }, svg);
+    const tx = el("text", { x: x(t), y: H - 8, "text-anchor": "middle", style: "fill:var(--muted);font-size:11px" }, svg);
+    tx.textContent = t.toFixed(2) + "%";
+  });
+  el("line", { x1: x(0), x2: x(0), y1: top, y2: H - 24, style: "stroke:var(--muted);stroke-width:1" }, svg);
+  const cur = ["Pound/$", "Yen/$", "DM/$", "CHF/$", "Euro/$"];
+  rows.forEach((r, i) => {
+    const y = top + i * rowH, v = r.vals[2], sig = r.sig[2];
+    const lab = el("text", { x: left - 10, y: y + rowH / 2 + 4, "text-anchor": "end", style: "fill:var(--fg2);font-size:12px" }, svg);
+    lab.textContent = r.name;
+    const x0 = x(Math.min(0, v)), w = Math.max(2, Math.abs(x(v) - x(0)));
+    const bar = el("rect", { x: x0, y: y + 5, width: w, height: rowH - 10, rx: 3,
+      style: `fill:var(${v >= 0 ? "--up" : "--down"});opacity:${sig ? 1 : 0.35}` }, svg);
+    const vt = el("text", { x: v >= 0 ? x(v) + 6 : x(0) + 6, y: y + rowH / 2 + 4, "text-anchor": "start",
+      style: "fill:var(--fg2);font-size:11px;font-family:var(--f-mono)" }, svg);
+    vt.textContent = fmt(v, 3) + (sig ? "" : "  n.s.");
+    const hit = el("rect", { x: 0, y, width: W, height: rowH, style: "fill:transparent" }, svg);
+    const html = `<b>${r.name}</b><br>` + cur.map((c, k) => `${c}: <span class="mono">${fmt(r.vals[k], 3)}%</span>${r.sig[k] ? "" : " <span style='color:var(--muted)'>(n.s.)</span>"}`).join("<br>");
+    hit.addEventListener("mousemove", ev => { bar.style.stroke = "var(--fg)"; showTip(html, ev); });
+    hit.addEventListener("mouseleave", () => { bar.style.stroke = "none"; hideTip(); });
+  });
+})();
+
+/* Grouped vertical bars */
+function grouped(sel, cats, series, opts) {
+  const W = opts.W || 460, H = opts.H || 270, top = 14, left = 46, right = 8, bottom = 34;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": opts.label }, document.querySelector(sel + " .plot"));
+  const all = series.flatMap(s => s.values);
+  const lo = Math.min(0, ...all), hi = Math.max(...all) * 1.08;
+  const y = v => top + (hi - v) / (hi - lo) * (H - top - bottom);
+  niceTicks(lo, hi, 5).forEach(t => {
+    el("line", { x1: left, x2: W - right, y1: y(t), y2: y(t), style: "stroke:var(--rule);stroke-width:1" }, svg);
+    const tx = el("text", { x: left - 6, y: y(t) + 4, "text-anchor": "end", style: "fill:var(--muted);font-size:11px" }, svg);
+    tx.textContent = opts.tick(t);
+  });
+  el("line", { x1: left, x2: W - right, y1: y(0), y2: y(0), style: "stroke:var(--muted);stroke-width:1" }, svg);
+  const gw = (W - left - right) / cats.length, bw = Math.min(26, (gw - 14) / series.length);
+  cats.forEach((c, i) => {
+    const gx = left + i * gw + (gw - bw * series.length - 2 * (series.length - 1)) / 2;
+    const lab = el("text", { x: left + i * gw + gw / 2, y: H - 12, "text-anchor": "middle", style: "fill:var(--fg2);font-size:11.5px" }, svg);
+    lab.textContent = c;
+    const bars = [];
+    series.forEach((s, k) => {
+      const v = s.values[i], bx = gx + k * (bw + 2);
+      const yy = v >= 0 ? y(v) : y(0), hh = Math.max(1.5, Math.abs(y(v) - y(0)));
+      bars.push(el("rect", { x: bx, y: yy, width: bw, height: hh, rx: 3, style: `fill:${s.color(v)}` }, svg));
+    });
+    const hit = el("rect", { x: left + i * gw, y: top, width: gw, height: H - top - bottom, style: "fill:transparent" }, svg);
+    const html = `<b>${c}</b><br>` + series.map(s => `${s.name}: <span class="mono">${opts.val(s.values[i])}</span>`).join("<br>") + (opts.extra ? opts.extra(i) : "");
+    hit.addEventListener("mousemove", ev => { bars.forEach(b => b.style.stroke = "var(--fg)"); showTip(html, ev); });
+    hit.addEventListener("mouseleave", () => { bars.forEach(b => b.style.stroke = "none"); hideTip(); });
+  });
+}
+const P = D.pairs, nice = p => p.slice(0, 3) + "/" + p.slice(3);
+grouped("#c-nfp", P.map(nice), [
+  { name: "Payrolls hour", values: P.map(p => D.nfp[p][0]), color: () => "var(--s1)" },
+  { name: "Same hour, other Fridays", values: P.map(p => D.nfp[p][1]), color: () => "var(--s2)" },
+  { name: "Any hour", values: P.map(p => D.nfp[p][2]), color: () => "var(--s3)" },
+], { label: "Median hourly move in the payrolls hour versus normal hours", tick: t => t + " bp", val: v => v.toFixed(1) + " bp",
+  extra: i => `<br>Payrolls hours hold <span class="mono">${D.nfp[P[i]][3].toFixed(1)}%</span> of all variance (0.19% of bars)` });
+grouped("#c-bond", P.map(nice), [
+  { name: "Payrolls hour", values: P.map(p => D.bond[p].corr_nfp), color: () => "var(--s1)" },
+  { name: "All other hours", values: P.map(p => D.bond[p].corr_other), color: () => "var(--s2)" },
+], { label: "Correlation of the dollar with US yields", tick: t => t.toFixed(1), val: v => v.toFixed(2),
+  extra: i => `<br>Same direction in payrolls hour: <span class="mono">${Math.round(D.bond[P[i]].same_dir_nfp * 100)}%</span>` });
+grouped("#c-asym", P.map(nice), [
+  { name: "Good report (yields up)", values: P.map(p => D.bond[p].usd_move_good), color: () => "var(--up)" },
+  { name: "Bad report (yields down)", values: P.map(p => D.bond[p].usd_move_bad), color: () => "var(--down)" },
+], { W: 760, H: 280, label: "Average dollar move after good and bad payrolls", tick: t => t + " bp", val: v => fmt(v, 1) + " bp",
+  extra: i => `<br>Average size: good <span class="mono">${D.bond[P[i]].abs_good.toFixed(1)}</span>, bad <span class="mono">${D.bond[P[i]].abs_bad.toFixed(1)}</span> bp` });
+
+/* Hour-of-day lines with a crosshair */
+(function () {
+  const W = 760, H = 300, top = 12, left = 46, right = 12, bottom = 34;
+  const host = document.querySelector("#c-hod .plot");
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Median hourly move by hour of day" }, host);
+  const cols = ["--s1", "--s2", "--s3", "--s4", "--s5"];
+  const leg = document.getElementById("hod-legend");
+  P.forEach((p, k) => { const s = document.createElement("span"); s.innerHTML = `<i style="background:var(${cols[k]})"></i>${nice(p)}`; leg.appendChild(s); });
+  const all = P.flatMap(p => D.hod[p]), hi = Math.max(...all) * 1.08;
+  const x = h => left + h / 23 * (W - left - right), y = v => top + (hi - v) / hi * (H - top - bottom);
+  [[7, 9], [12, 16]].forEach(([a, b]) => el("rect", { x: x(a), y: top, width: x(b) - x(a), height: H - top - bottom, style: "fill:var(--accent-soft)" }, svg));
+  niceTicks(0, hi, 5).forEach(t => {
+    el("line", { x1: left, x2: W - right, y1: y(t), y2: y(t), style: "stroke:var(--rule);stroke-width:1" }, svg);
+    const tx = el("text", { x: left - 6, y: y(t) + 4, "text-anchor": "end", style: "fill:var(--muted);font-size:11px" }, svg);
+    tx.textContent = t + " bp";
+  });
+  for (let h = 0; h < 24; h += 3) {
+    const tx = el("text", { x: x(h), y: H - 12, "text-anchor": "middle", style: "fill:var(--muted);font-size:11px" }, svg);
+    tx.textContent = String(h).padStart(2, "0") + ":00";
+  }
+  P.forEach((p, k) => {
+    const pts = D.hod[p].map((v, h) => `${x(h)},${y(v)}`).join(" ");
+    el("polyline", { points: pts, style: `fill:none;stroke:var(${cols[k]});stroke-width:2;stroke-linejoin:round` }, svg);
+  });
+  const cross = el("line", { y1: top, y2: H - bottom, style: "stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3", visibility: "hidden" }, svg);
+  const dots = P.map((p, k) => el("circle", { r: 4.5, style: `fill:var(${cols[k]});stroke:var(--surface);stroke-width:2`, visibility: "hidden" }, svg));
+  const hit = el("rect", { x: left, y: top, width: W - left - right, height: H - top - bottom, style: "fill:transparent" }, svg);
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * W;
+    const h = Math.max(0, Math.min(23, Math.round((sx - left) / (W - left - right) * 23)));
+    cross.setAttribute("x1", x(h)); cross.setAttribute("x2", x(h)); cross.setAttribute("visibility", "visible");
+    dots.forEach((d, k) => { d.setAttribute("cx", x(h)); d.setAttribute("cy", y(D.hod[P[k]][h])); d.setAttribute("visibility", "visible"); });
+    const rows = P.map((p, k) => [p, D.hod[p][h], k]).sort((a, b) => b[1] - a[1]);
+    showTip(`<b>${String(h).padStart(2, "0")}:00–${String((h + 1) % 24).padStart(2, "0")}:00 UTC</b><br>` +
+      rows.map(([p, v, k]) => `<span style="color:var(${cols[k]})">●</span> ${nice(p)} <span class="mono">${v.toFixed(1)} bp</span>`).join("<br>"), ev);
+  });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); dots.forEach(d => d.setAttribute("visibility", "hidden")); hideTip(); });
+})();
+
+/* Full Andersen et al. table (shown in print) */
+(function () {
+  const tb = document.querySelector("#t-abdv tbody");
+  D.abdv.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.name}</td>` + r.vals.map((v, k) => `<td class="num">${fmt(v, 3)}${r.sig[k] ? "*" : ""}</td>`).join("");
+    tb.appendChild(tr);
+  });
+  const note = document.createElement("tr");
+  note.innerHTML = `<td colspan="6" class="small">% move in 5 minutes; positive = dollar up; * = significant at 5%.</td>`;
+  tb.appendChild(note);
+})();
+
+/* Continuation table */
+(function () {
+  const tb = document.querySelector("#t-cont tbody");
+  P.forEach(p => {
+    const c = D.cont[p], tr = document.createElement("tr");
+    tr.innerHTML = `<td>${nice(p)}</td><td class="num">${fmt(c.corr_next1h)}</td><td class="num">${Math.round(c.same_dir_next1h * 100)}%</td><td class="num">${fmt(c.corr_next3h)}</td><td class="num">${fmt(c.corr_next6h)}</td>`;
+    tb.appendChild(tr);
+  });
+})();
+</script>
+<style>
+@page { size: Letter; margin: 14mm 12mm 16mm; }
+@media print {
+  :root, :root[data-theme] { color-scheme: light; }
+  body { background: #ffffff !important; font-size: 11.5px; }
+  .wrap { max-width: none; padding: 0 !important; }
+  h1 { font-size: 30px; }
+  h2 { font-size: 18px; margin-top: 22px; break-after: avoid; }
+  h3 { break-after: avoid; }
+  .chart, .bottom, .callout, tr, .grid2 > * { break-inside: avoid; }
+  .tablebox { overflow: visible; border-radius: 6px; }
+  table { font-size: 10.5px; }
+  th, td { padding: 6px 8px; }
+  #tip { display: none !important; }
+  a { text-decoration: none; }
+  .grid2 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</body>
+</html>
