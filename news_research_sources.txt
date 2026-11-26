@@ -1,0 +1,166 @@
+NEWS AND FX PRICE MOVEMENT - SOURCES
+Prepared 25 Nov 2026 for the FX Strategy Portfolio project.
+
+How these were used: every source below was found through web searches. I worked from the
+search results' abstracts, publisher pages and summaries; I did not read the full text of the
+papers (several are paywalled). Check exact figures against the original papers before citing
+them in the report.
+
+
+======================================================================
+PART 1 - SOURCES CITED IN THE ANSWER
+======================================================================
+
+1. Andersen, T., Bollerslev, T., Diebold, F. X. and Vega, C. (2003).
+   "Micro Effects of Macro Announcements: Real-Time Price Discovery in Foreign Exchange."
+   American Economic Review 93(1), 38-62.
+   Used for: only surprises move prices; bad news has a bigger impact than good news.
+   - https://www.nber.org/papers/w8959
+   - https://papers.ssrn.com/abstract=313660
+   - https://insight.kellogg.northwestern.edu/article/currency_exchange_rates   (Kellogg Insight summary)
+
+2. Ederington, L. H. and Lee, J. H. (1993).
+   "How Markets Process Information: News Releases and Volatility."
+   Journal of Finance 48(4), 1161-1191.
+   Used for: adjustment within the first minute; volatility elevated about 15 minutes;
+   scheduled releases explain most time-of-day and day-of-week volatility patterns.
+   - https://ideas.repec.org/a/bla/jfinan/v48y1993i4p1161-91.html
+
+3. Evans, M. D. D. and Lyons, R. K. (2008).
+   "How Is Macro News Transmitted to Exchange Rates?"
+   Journal of Financial Economics 88(1), 26-50.
+   Used for: direct effect of scheduled news < 10% of daily variance; news overall > 30%;
+   about two-thirds transmitted through order flow.
+   - https://econpapers.repec.org/RePEc:eee:jfinec:v:88:y:2008:i:1:p:26-50
+   - https://www.nber.org/papers/w9433   (working paper version)
+
+4. Evans, M. D. D. and Lyons, R. K. (2002).
+   "Order Flow and Exchange Rate Dynamics."
+   Journal of Political Economy 110(1), 170-180.
+   Used for: order flow explains more than 60% of daily DM/$ changes.
+   - https://econpapers.repec.org/RePEc:ucp:jpolec:v:110:y:2002:i:1:p:170-180
+   - https://nber.org/papers/w7317   (working paper version)
+
+5. Meese, R. A. and Rogoff, K. (1983).
+   "Empirical Exchange Rate Models of the Seventies: Do They Fit Out of Sample?"
+   Journal of International Economics 14(1-2), 3-24.
+   Used for: fundamentals-based models do not beat a random walk out of sample.
+   - https://users.ssc.wisc.edu/~behansen/390/MeeseRogoff.pdf
+
+6. Goldberg, L. and Grisse, C. (2013).
+   "Time Variation in Asset Price Responses to Macro Announcements."
+   Federal Reserve Bank of New York Staff Report 626 (also NBER w19523).
+   Used for: the importance of a release changes over time with policy rates and risk conditions.
+   - https://www.newyorkfed.org/research/staff_reports/sr626.pdf
+
+7. Rosa, C. (2011).
+   "The High-Frequency Response of Exchange Rates to Monetary Policy Actions and Statements."
+   Journal of Banking and Finance 35(2), 478-489.
+   Used for: Fed decisions and statements have large effects; statement surprises explain
+   most of the move; absorbed in 30-40 minutes.
+   - https://econpapers.repec.org/RePEc:eee:jbfina:v:35:y:2011:i:2:p:478-489
+
+8. Cheung, Y.-W. and Chinn, M. D. (2001).
+   "Currency Traders and Exchange Rate Dynamics: A Survey of the US Market."
+   Journal of International Money and Finance 20(4), 439-471.
+   Used for: interest rates always important to traders; importance of other variables shifts;
+   traders watch the trade balance.
+   - https://econpapers.repec.org/RePEc:eee:jimfin:v:20:y:2001:i:4:p:439-471
+
+9. Ederington, L. H., Guan, W. and Yang, L. (2019).
+   "The Impact of the U.S. Employment Report on Exchange Rates."
+   Journal of International Money and Finance 90, 257-267.
+   Used for: nonfarm payrolls is the most important US release for EUR, GBP and JPY;
+   revisions and the unemployment rate also matter.
+   - https://ideas.repec.org/a/eee/jimfin/v90y2019icp257-267.html
+
+10. CXO Advisory. "Which Economic Data Announcements Matter?"
+    Summary of an intraday study covering 1998-2007.
+    Used for: payrolls, GDP advance and ISM manufacturing were the releases with large,
+    lasting price responses. (Secondary summary, not the original paper.)
+    - https://cxoadvisory.com/economic-indicators/which-economic-data-announcements-matter
+
+11. Filippou, I., Taylor, M. P. and Wang, G. (2023).
+    "Media Sentiment and Currency Reversals."
+    Journal of Financial and Quantitative Analysis.
+    Used for: high media sentiment predicts lower currency returns; long-low / short-high
+    sentiment strategy over 48 currencies and 35 years.
+    - https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/media-sentiment-and-currency-reversals/84CEB4F2EEE1521C3C694F547AC35A0B
+
+12. Neely, C. J. and Dey, S. R. (2010).
+    "A Survey of Announcement Effects on Foreign Exchange Returns."
+    Federal Reserve Bank of St. Louis Review 92(5), 417-464.
+    Recommended as the starting survey.
+    - https://ideas.repec.org/a/fip/fedlrv/y2010isepp417-464nv.92no.5.html
+
+
+======================================================================
+PART 2 - OTHER SOURCES, LINKS AND REFERENCES CONSULTED
+======================================================================
+
+A. Other versions or pages of the papers above (seen in search results)
+   - https://www.nber.org/system/files/working_papers/w8959/w8959.pdf   (Andersen et al., PDF)
+   - https://scholars.duke.edu/individual/pub712364   (Andersen et al., Duke record)
+   - https://www.kellogg.northwestern.edu/academics-research/research/detail/2003/micro-effects-of-macro-accouncements-real-time-price-discovery/
+   - https://econpapers.repec.org/RePEc:bla:jfinan:v:48:y:1993:i:4:p:1161-91   (Ederington & Lee)
+   - https://www.nber.org/papers/w9433.pdf   (Evans & Lyons 2008, working-paper PDF)
+   - https://www.nber.org/papers/w7317.pdf   (Evans & Lyons 2002, working-paper PDF)
+   - https://www.johnhcochrane.com/s/evans_lyons_jpe.pdf   (Evans & Lyons 2002, hosted copy)
+   - https://www.federalreserve.gov/pubs/ifdp/2005/830/revision/ifdp830.htm
+     (Berger et al., Fed IFDP 830, which restates the Evans & Lyons > 60% R-squared)
+   - https://rogoff.scholars.harvard.edu/publications/empirical-exchange-rate-models-seventies-do-they-fit-out-sample
+   - https://rogoff.scholars.harvard.edu/publications/out-sample-failure-empirical-exchange-rate-models-sampling-error-or-misspecifica
+     (Meese & Rogoff companion paper on sampling error)
+   - https://www.nber.org/papers/w19523   (Goldberg & Grisse, NBER version)
+   - https://resources.newyorkfed.org/medialibrary/media/research/economists/goldberg/time_variation_march2015.pdf
+     (Goldberg & Grisse, revised 2015 version)
+   - https://www.econbiz.de/Record/the-high-frequency-response-of-exchange-rates-to-monetary-policy-actions-and-statements/10008864618   (Rosa 2011)
+   - https://cesifo.org/DocDL/WP251.PDF   (Cheung & Chinn, CESifo working paper)
+   - https://www.nber.org/papers/w7416   (Cheung, Chinn & Marsh, related trader-survey paper)
+   - https://fedinprint.org/item/fedlrv/25623   (Neely & Dey, FedInPrint record)
+   - https://files.stlouisfed.org/files/htdocs/publications/review/10/09/Neely.pdf   (Neely & Dey, full PDF)
+   - https://repec.cepr.org/repec/cpr/ceprdp/DP16049.pdf   (Filippou, Taylor & Wang, CEPR working paper)
+
+B. Related work found but not cited in the answer
+   - Neely, C. J. (2011). "A Survey of Announcement Effects on Foreign Exchange Volatility and Jumps."
+     St. Louis Fed Review 93(5), 361-385.
+     https://ideas.repec.org/a/fip/fedlrv/y2011isepp361-385nv.93no.5.html
+   - Ferrari, Kearns and Schrimpf (2016). "Monetary Shocks at High Frequency and Their Changing FX Transmission."
+     https://www.bankofcanada.ca/wp-content/uploads/2017/01/monetary-shocks-high-frequency.pdf
+     https://www.diw.de/documents/dokumentenarchiv/17/diw_01.c.546975.de/ferrarikearnsschmrimpf2016_monetary%20shocks%20at%20high-frequency.pdf
+   - Rosa, C. (2013). New York Fed Economic Policy Review article on monetary policy and markets.
+     https://www.newyorkfed.org/medialibrary/media/research/epr/2013/0913rosa.pdf
+   - Cormun, V. and Ristolainen, K. (2024/2025). Narrative decomposition of the dollar using
+     Wall Street Journal coverage (AEA 2025 program, working paper).
+     https://aeaweb.org/conference/2025/program/paper/i3HF3z5a
+   - EUR/USD forecasting with large language models and news sentiment (arXiv preprint, not peer reviewed).
+     https://arxiv.org/html/2408.13214v2
+   - Boston Fed and San Francisco Fed working papers that appeared alongside the Neely & Dey survey:
+     https://www.bostonfed.org/-/media/Documents/Workingpapers/PDF/economic/ppb/2013/ppb137.pdf
+     https://www.frbsf.org/wp-content/uploads/wp2015-18.pdf
+
+C. Student theses (not peer reviewed; seen in results, not relied on)
+   - Jandejsek (2021), MBA thesis on nonfarm payrolls and EUR/USD, 2000-2020 (reports the NFP effect fading 2017-2020).
+     https://web-typo3.modul.ac.at/uploads/files/Theses/Master/Grad_2021/MBA_2021/Master_Thesis_Jandejsek.pdf
+   - Szeker (2025), CEU thesis on news sentiment and EUR/HUF.
+     https://www.etd.ceu.edu/2025/szeker_zita.pdf
+   - Brouwer, Erasmus University thesis on news and GBP/USD.
+     https://thesis.eur.nl/pub/41361/Brouwer-YM-433638.pdf
+   - University of Vaasa thesis on macro announcements (osuva repository).
+     https://osuva.uwasa.fi/bitstream/10024/3939/1/osuva_7497.pdf
+
+D. Non-academic pages seen in results (not relied on)
+   - https://oanda.com/us-en/trade-tap-blog/trading-knowledge/what-is-non-farm-payroll
+
+E. References used without a fetched source
+   - Payroll release dates in the project's event check were generated from the Bureau of Labor
+     Statistics scheduling rule (the Friday three weeks after the week containing the 12th, with
+     New Year and July 4 holiday shifts). This rule came from my own knowledge, not from a page I
+     opened; a few dates may differ from the official calendar. Official schedule:
+     https://www.bls.gov/schedule/news_release/empsit.htm   (not opened)
+   - The judgement that CPI became more important after 2021 is my own reading, not a cited finding.
+
+F. Project data
+   - The payrolls event check (15-23 bp median move in the release hour, 3.3-5x a normal hour,
+     1.8-2.8% of total variance) was computed from the course's hourly data in currencydata_raw/
+     (2020-07 to 2025-06) for EUR/USD, GBP/USD, AUD/USD, USD/CAD and USD/JPY.
